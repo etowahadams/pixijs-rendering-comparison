@@ -5,11 +5,12 @@ export class ZoomableScatterplot {
   private app: PIXI.Application<HTMLCanvasElement>;
   private isDragging: boolean = false;
   private dragStartX: number = 0;
+  private dragStartY: number = 0;
 
   private verticalBar: PIXI.Graphics;
   private pBase: PIXI.Graphics;
 
-  constructor(width: number, height: number, container: HTMLDivElement) {
+  constructor(data: {x: number, y: number}[], width: number, height: number, container: HTMLDivElement) {
     this.app = new PIXI.Application<HTMLCanvasElement>({
       width,
       height,
@@ -23,7 +24,6 @@ export class ZoomableScatterplot {
     this.verticalBar = new PIXI.Graphics();
     this.app.stage.addChild(this.verticalBar);
 
-    const data = generateRandomData(10000); // You can specify the number of points you want
 
     const graphics = new PIXI.Graphics();
 
@@ -75,11 +75,14 @@ export class ZoomableScatterplot {
 
       // Apply smooth zooming
       const newScaleX = this.pBase.scale.x * zoomFactor;
+      const newScaleY = this.pBase.scale.x * zoomFactor;
       this.pBase.scale.x = Math.max(newScaleX, maxZoomOut);
+      this.pBase.scale.y = Math.max(newScaleY, maxZoomOut);
 
       // Adjust the position to keep the mouse at the same point after zoom
       const newMousePosition = this.pBase.toGlobal(localMousePosition);
       this.pBase.x += mousePosition.x - newMousePosition.x;
+      this.pBase.y += mousePosition.y - newMousePosition.y;
     }
   }
 
@@ -90,6 +93,7 @@ export class ZoomableScatterplot {
     if (isMouseOverPlot) {
       this.isDragging = true;
       this.dragStartX = event.clientX;
+      this.dragStartY = event.clientY;
     }
   }
 
@@ -100,8 +104,11 @@ export class ZoomableScatterplot {
   private handleMouseMove(event: MouseEvent): void {
     if (this.isDragging) {
       const deltaX = event.clientX - this.dragStartX;
+      const deltaY = event.clientY - this.dragStartY;
       this.pBase.x += deltaX;
+      this.pBase.y += deltaY;
       this.dragStartX = event.clientX;
+      this.dragStartY = event.clientY;
     }
 
     // Update the vertical bar position to follow the mouse
