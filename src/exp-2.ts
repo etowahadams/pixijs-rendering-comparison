@@ -41,7 +41,7 @@ export class ZoomableScatterplot {
     this.pBase = new PIXI.Graphics();
     this.app.stage.addChild(this.pBase);
 
-    this.data = data; // You can specify the number of points you want
+    this.data = structuredClone(data); // You can specify the number of points you want
     this.drawData({ x: 0, y: 0 });
 
     // Enable interaction for zooming and panning
