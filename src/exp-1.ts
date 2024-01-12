@@ -1,13 +1,9 @@
 import * as PIXI from "pixi.js";
-import { generateRandomData } from "./utils";
-
 export class ZoomableScatterplot {
   private app: PIXI.Application<HTMLCanvasElement>;
   private isDragging: boolean = false;
   private dragStartX: number = 0;
   private dragStartY: number = 0;
-
-  private verticalBar: PIXI.Graphics;
   private pBase: PIXI.Graphics;
 
   constructor(data: {x: number, y: number}[], width: number, height: number, container: HTMLDivElement) {
@@ -21,12 +17,7 @@ export class ZoomableScatterplot {
 
     container.appendChild(this.app.view);
 
-    this.verticalBar = new PIXI.Graphics();
-    this.app.stage.addChild(this.verticalBar);
-
-
     const graphics = new PIXI.Graphics();
-
     // Plot initial data
     data.forEach((point) => {
       graphics.beginFill(0x0000ff); // Change color to blue (0x0000ff)
@@ -110,9 +101,6 @@ export class ZoomableScatterplot {
       this.dragStartX = event.clientX;
       this.dragStartY = event.clientY;
     }
-
-    // Update the vertical bar position to follow the mouse
-    this.updateVerticalBarPosition(event);
   }
 
   private isPointOverPlot(x: number, y: number): boolean {
@@ -123,18 +111,5 @@ export class ZoomableScatterplot {
       y >= plotBounds.top &&
       y <= plotBounds.bottom
     );
-  }
-
-  private updateVerticalBarPosition(event: MouseEvent): void {
-    const mousePosition = {
-      x: event.clientX - this.app.view.getBoundingClientRect().left,
-      y: event.clientY - this.app.view.getBoundingClientRect().top,
-    };
-    const localMousePosition = this.app.stage.toLocal(mousePosition);
-
-    this.verticalBar.clear();
-    this.verticalBar.lineStyle(0.5, 0x000000, 1); // Set color to black
-    this.verticalBar.moveTo(localMousePosition.x, 0);
-    this.verticalBar.lineTo(localMousePosition.x, this.app.renderer.height);
   }
 }
