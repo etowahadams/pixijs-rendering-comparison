@@ -71,7 +71,6 @@ export class ZoomableScatterplot {
   }
 
   private zoomed(event: D3ZoomEvent<HTMLCanvasElement, unknown>): void {
-    console.warn(event);
     const transform = event.transform;
     this.xScale = transform.rescaleX(scaleLinear());
     this.yScale = transform.rescaleY(scaleLinear());

@@ -54,6 +54,7 @@ export class ZoomableScatterplot {
   }
 
   private isPointVisible(x: number, y: number): boolean {
+    // See where the screen is relative to pBase
     const localBox = this.pBase.toLocal(this.app.renderer.screen);
     return (
       x >= localBox.x &&

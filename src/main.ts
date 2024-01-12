@@ -9,6 +9,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <h1>Minimal PIXI.js Plots</h1>
     <div class="card">
       <div class="card-left">
+        <p>Let's make a scatterplot with PIXI.js</p>
         <p>Experiment 1: Draw everything on the same Graphics object</p>
         <p>Zoom by scaling the Graphics object, and pan by changing the x and y position of the Graphics object.</p>
       </div>
@@ -18,6 +19,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     </div>
     <div class="card">
       <div class="card-left">
+        <p> What if we want the circles to remain the same size even when we zoom in?</p>
         <p>Experiment 2: Redraw at every frame</p>
       </div>
       <div class="card-right">
@@ -26,7 +28,8 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     </div>
     <div class="card">
       <div class="card-left">
-        <p>Experiment 3: Zoom using D3</p>
+        <p>Can we use d3-zoom and d3-scale to simplify the implementation?</p>
+        <p>Experiment 3: D3 + PixiJS</p>
       </div>
       <div class="card-right">
         <div id="plot3" class="plot"></div>
