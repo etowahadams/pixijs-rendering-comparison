@@ -64,19 +64,19 @@ export class ZoomableScatterplot {
     )
   }
 
-  private drawData(mousePosition?: { x: number; y: number }): void {
+  private drawData(zoomMousePosition?: { x: number; y: number }): void {
     this.pBase.clear();
     // Plot data with updated positions based on zoom level
     this.data.forEach((point) => {
-      if (mousePosition) {
+      if (zoomMousePosition) {
         point.x = translateAndScale(
           point.x,
-          mousePosition.x,
+          zoomMousePosition.x,
           this.zoomFactor
         );
         point.y = translateAndScale(
           point.y,
-          mousePosition.y,
+          zoomMousePosition.y,
           this.zoomFactor
         );
       }
