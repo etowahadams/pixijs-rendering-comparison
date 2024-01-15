@@ -6,7 +6,12 @@ export class ZoomableScatterplot {
   private dragStartY: number = 0;
   private pBase: PIXI.Graphics;
 
-  constructor(data: {x: number, y: number}[], width: number, height: number, container: HTMLDivElement) {
+  constructor(
+    data: { x: number; y: number }[],
+    width: number,
+    height: number,
+    container: HTMLDivElement
+  ) {
     this.app = new PIXI.Application<HTMLCanvasElement>({
       width,
       height,
@@ -44,11 +49,10 @@ export class ZoomableScatterplot {
 
   private handleZoom(event: WheelEvent): void {
     // Check if the mouse is over the plot
-    const isMouseOverPlot = this.isPointOverPlot(event.clientX, event.clientY);
+    const isMouseOverPlot = this.isMouseOverPlot(event.clientX, event.clientY);
 
     if (isMouseOverPlot) {
       event.preventDefault(); // Prevent default behavior (page scrolling)
-
       const delta = event.deltaY;
       const scaleMultiplier = 0.05;
 
@@ -79,7 +83,7 @@ export class ZoomableScatterplot {
 
   private handleMouseDown(event: MouseEvent): void {
     // Check if the mouse is over the plot
-    const isMouseOverPlot = this.isPointOverPlot(event.clientX, event.clientY);
+    const isMouseOverPlot = this.isMouseOverPlot(event.clientX, event.clientY);
 
     if (isMouseOverPlot) {
       this.isDragging = true;
@@ -103,7 +107,7 @@ export class ZoomableScatterplot {
     }
   }
 
-  private isPointOverPlot(x: number, y: number): boolean {
+  private isMouseOverPlot(x: number, y: number): boolean {
     const plotBounds = this.app.view.getBoundingClientRect();
     return (
       x >= plotBounds.left &&

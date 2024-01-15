@@ -6,23 +6,45 @@ import { select } from "d3-selection";
 // Default d3 zoom feels slow so we use this instead
 // https://d3js.org/d3-zoom#zoom_wheelDelta
 function wheelDelta(event: WheelEvent) {
-    const defaultMultiplier = 5
-    return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) * (event.ctrlKey ? 10 : defaultMultiplier);
-  }
+  const defaultMultiplier = 5;
+  return (
+    -event.deltaY *
+    (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
+    (event.ctrlKey ? 10 : defaultMultiplier)
+  );
+}
 
-export class ZoomableScatterplot {
+const generateCircleTexture = (renderer: PIXI.IRenderer<HTMLCanvasElement>, radius: number) => {
+  const tileSize = radius * 3;
+  const renderTexture = PIXI.RenderTexture.create({
+    height: tileSize,
+    width: tileSize,
+  });
+
+  const circle = new PIXI.Graphics();
+  circle.beginFill(0x0000ff);
+  circle.drawCircle(tileSize / 2, tileSize / 2, radius);
+  circle.endFill();
+
+  renderer.render(circle, { renderTexture });
+
+  return renderTexture;
+};
+
+export class TextureScatterPlot {
   private app: PIXI.Application<HTMLCanvasElement>;
   private pBase: PIXI.Graphics;
   private data: { x: number; y: number }[] = [];
   private xScale: ScaleLinear<number, number> = scaleLinear();
   private yScale: ScaleLinear<number, number> = scaleLinear();
-  private circles: PIXI.Graphics[] = [];
+  private circles: PIXI.Sprite[] = [];
 
   constructor(
     data: { x: number; y: number }[],
     width: number,
     height: number,
-    container: HTMLDivElement
+    container: HTMLDivElement,
+    fps: (fps: number) => void
   ) {
     this.app = new PIXI.Application<HTMLCanvasElement>({
       width,
@@ -38,23 +60,26 @@ export class ZoomableScatterplot {
     this.app.stage.addChild(this.pBase);
 
     // Attach zoom behavior to the canvas.
-    const zoomBehavior = zoom<HTMLCanvasElement, unknown>().wheelDelta(wheelDelta).on(
-      "zoom",
-      this.zoomed.bind(this)
-    );
+    const zoomBehavior = zoom<HTMLCanvasElement, unknown>()
+      .wheelDelta(wheelDelta)
+      .on("zoom", this.zoomed.bind(this));
     select<HTMLCanvasElement, unknown>(this.app.view).call(zoomBehavior);
 
     this.data = data; // You can specify the number of points you want
     this.createCircles();
     this.drawData();
+
+    this.app.ticker.add(() => {
+      fps(this.app.ticker.FPS); 
+    });
   }
 
   private createCircles(): void {
+    const circleTexture = generateCircleTexture(this.app.renderer, 5);
     this.circles = this.data.map((point) => {
-      const circle = new PIXI.Graphics();
-      circle.beginFill(0x0000ff); // Change color to blue (0x0000ff)
-      circle.drawCircle(0, 0, 5);
-      circle.endFill();
+      const circle = new PIXI.Sprite(circleTexture);
+      circle.position.x = point.x;
+      circle.position.y = point.y;
       this.pBase.addChild(circle);
       return circle;
     });
@@ -86,5 +111,16 @@ export class ZoomableScatterplot {
     this.yScale = transform.rescaleY(scaleLinear());
     // Redraw the data using the updated scales
     this.drawData();
+  }
+
+  public scaleTo(scale: number, duration?: number): void {
+    const zoomTime = duration || 1500;
+    const zoomBehavior = zoom<HTMLCanvasElement, unknown>()
+      .wheelDelta(wheelDelta)
+      .on("zoom", this.zoomed.bind(this));
+  
+    const canvasElement = this.app.view;
+  
+    select<HTMLCanvasElement, unknown>(canvasElement).transition().duration(zoomTime).call(zoomBehavior.scaleTo, scale);
   }
 }
