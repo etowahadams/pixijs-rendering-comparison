@@ -63,6 +63,7 @@ export class RedrawScatterPlot {
       if (!this.isPointVisisble(scaledX, scaledY)) {
         return;
       }
+      this.pBase.lineStyle(1, 0x000000);
       this.pBase.beginFill(0x0000ff); // Change color to blue (0x0000ff)
       this.pBase.drawCircle(scaledX, scaledY, 5);
       this.pBase.endFill();
@@ -82,7 +83,8 @@ export class RedrawScatterPlot {
     // Redraw the data using the updated scales
     this.drawData();
   }
-  public scaleTo(scale: number, duration?: number): void {
+
+  public scaleTo(scale: number, duration?: number): Promise<void> {
     const zoomTime = duration || 1500;
     const zoomBehavior = zoom<HTMLCanvasElement, unknown>()
       .wheelDelta(wheelDelta)
@@ -91,5 +93,14 @@ export class RedrawScatterPlot {
     const canvasElement = this.app.view;
   
     select<HTMLCanvasElement, unknown>(canvasElement).transition().duration(zoomTime).call(zoomBehavior.scaleTo, scale);
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, zoomTime);
+    });
+  }
+  public destroy(): void {
+    this.app.destroy();
   }
 }

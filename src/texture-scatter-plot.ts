@@ -3,6 +3,12 @@ import { scaleLinear, type ScaleLinear } from "d3-scale";
 import { zoom, D3ZoomEvent } from "d3-zoom";
 import { select } from "d3-selection";
 
+// temporary fix https://stackoverflow.com/a/54020925
+// @types/d3-select does not have the right version of d3-transition
+import { transition as d3Transition } from 'd3-transition';
+select.prototype.transition = d3Transition;
+
+
 // Default d3 zoom feels slow so we use this instead
 // https://d3js.org/d3-zoom#zoom_wheelDelta
 function wheelDelta(event: WheelEvent) {
@@ -22,6 +28,7 @@ const generateCircleTexture = (renderer: PIXI.IRenderer<HTMLCanvasElement>, radi
   });
 
   const circle = new PIXI.Graphics();
+  circle.lineStyle(1, 0x000000);
   circle.beginFill(0x0000ff);
   circle.drawCircle(tileSize / 2, tileSize / 2, radius);
   circle.endFill();
@@ -101,7 +108,7 @@ export class TextureScatterPlot {
 
   private isPointVisisble(x: number, y: number): boolean {
     return (
-      x >= 0 && x <= this.app.view.width && y >= 0 && y <= this.app.view.height
+      x >= -10 && x <= this.app.view.width && y >= -10 && y <= this.app.view.height + 10
     );
   }
 
@@ -113,7 +120,7 @@ export class TextureScatterPlot {
     this.drawData();
   }
 
-  public scaleTo(scale: number, duration?: number): void {
+  public scaleTo(scale: number, duration?: number): Promise<void> {
     const zoomTime = duration || 1500;
     const zoomBehavior = zoom<HTMLCanvasElement, unknown>()
       .wheelDelta(wheelDelta)
@@ -122,5 +129,15 @@ export class TextureScatterPlot {
     const canvasElement = this.app.view;
   
     select<HTMLCanvasElement, unknown>(canvasElement).transition().duration(zoomTime).call(zoomBehavior.scaleTo, scale);
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, zoomTime);
+    });
+  }
+
+  public destroy(): void {
+    this.app.destroy();
   }
 }

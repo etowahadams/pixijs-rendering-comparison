@@ -60,6 +60,7 @@ export class TranslateScatterPlot {
   private createCircles(): void {
     this.circles = this.data.map(() => {
       const circle = new PIXI.Graphics();
+      circle.lineStyle(1, 0x000000);
       circle.beginFill(0x0000ff); // Change color to blue (0x0000ff)
       circle.drawCircle(0, 0, 5);
       circle.endFill();
@@ -96,7 +97,7 @@ export class TranslateScatterPlot {
     this.drawData();
   }
 
-  public scaleTo(scale: number, duration?: number): void {
+  public scaleTo(scale: number, duration?: number): Promise<void> {
     const zoomTime = duration || 1500;
     const zoomBehavior = zoom<HTMLCanvasElement, unknown>()
       .wheelDelta(wheelDelta)
@@ -105,5 +106,15 @@ export class TranslateScatterPlot {
     const canvasElement = this.app.view;
   
     select<HTMLCanvasElement, unknown>(canvasElement).transition().duration(zoomTime).call(zoomBehavior.scaleTo, scale);
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, zoomTime);
+    });
+  }
+
+  public destroy(): void {
+    this.app.destroy();
   }
 }

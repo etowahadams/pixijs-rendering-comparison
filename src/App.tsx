@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import "./App.css";
 import { RedrawScatterPlot } from "./redraw-scatter-plot";
 import { TranslateScatterPlot } from "./translate-scatter-plot";
@@ -7,30 +7,41 @@ import { generateRandomData } from "./utils";
 
 const plots = [
   {
-    label: "Make texture from circle and translate",
+    label: "Translate Sprites",
+    description:
+      "Circles are instances of the same Sprite. On zoom, the Sprites get translated.",
     content: TextureScatterPlot,
   },
-  { label: "Translate drawn circles", content: TranslateScatterPlot },
-  { label: "Redraw circles every frame", content: RedrawScatterPlot },
+  {
+    label: "Translate Graphics",
+    description:
+      "A Graphics object is created for each circle. On zoom, the Graphics objects get translated.",
+    content: TranslateScatterPlot,
+  },
+  {
+    label: "Redraw Graphics every frame",
+    description:
+      "All circles are drawn to single a Graphics object. On zoom, the Graphics object is cleared and new circles are drawn.",
+    content: RedrawScatterPlot,
+  },
 ];
 
-const dataSizes = [16000, 64000, 128000];
+const dataSizes = [4000, 16000, 64000, 128000];
 
-function autoZoom(plot: { scaleTo: (scale: number) => void }): void {
-  const zoomInOut = (scale: number): void => {
-    plot.scaleTo(scale);
-    setTimeout(() => {
-      zoomInOut(scale === 1 ? 0.05 : 1);
-    }, 1500);
-  };
-
-  zoomInOut(0.05);
+function avg(arr: number[]) {
+  return arr.reduce((a, b) => a + b) / arr.length;
 }
 
 function App() {
   const [currentPlot, setCurrentPlot] = useState(0);
-  const [numCircles, setNumCircles] = useState(16000);
-  const [fps, setFps] = useState(0);
+  const [numCircles, setNumCircles] = useState(4000);
+  const [fps, setFps] = useState(120);
+  const [isRecordingMinFps, setIsRecordingMinFps] = useState(false);
+  const plot = useRef<
+    TextureScatterPlot | TranslateScatterPlot | RedrawScatterPlot
+  >();
+  const [minFps, setMinFps] = useState<number>();
+  const recordedFps = useRef<number[]>([]);
 
   const data = useMemo(
     () =>
@@ -44,20 +55,51 @@ function App() {
     [numCircles]
   );
 
-  
+  async function zoomLoop() {
+    await plot.current?.scaleTo(0.05);
+    setIsRecordingMinFps(true);
+    await plot.current?.scaleTo(1);
+    setIsRecordingMinFps(false);
+  }
 
   useEffect(() => {
+    recordedFps.current.push(fps);
+    // Look at a window of the last 5 fps values
+    if (recordedFps.current.length > 5) {
+      recordedFps.current.shift();
+    }
+    const avgFps = avg(recordedFps.current);
+    if (isRecordingMinFps && (minFps === undefined || avgFps < minFps)) {
+      setMinFps(avgFps);
+    }
+  }, [fps, minFps, isRecordingMinFps]);
+
+  useEffect(() => {
+    // Cleanup the old plot to avoid memory leaks
+    plot.current?.destroy();
+    setMinFps(undefined);
+
+    // Create the new plot 
     const plotElement = document.getElementById("plot") as HTMLDivElement;
     plotElement.innerHTML = "";
-    const plot = new plots[currentPlot].content(data, 400, 300, plotElement, setFps);
-    autoZoom(plot);
-  }, [currentPlot, numCircles]);
+    const newPlot = new plots[currentPlot].content(
+      data,
+      500,
+      500,
+      plotElement,
+      setFps
+    );
+    
+    plot.current = newPlot;
+    zoomLoop();
+  }, [currentPlot, numCircles, data]);
 
   return (
     <>
       <div></div>
-      <h1>Minimal Pixi Plots</h1>
+      <h1>Testing PixiJS Rendering</h1>
       <div className="card">
+        <p className="label">Rendering strategy:</p>
         {plots.map((plot, i) => {
           return (
             <button
@@ -72,7 +114,9 @@ function App() {
           );
         })}
       </div>
-      <div>
+      <div className="desc">{plots[currentPlot].description} </div>
+      <div className="card">
+        <p className="label">Number of points:</p>
         {dataSizes.map((num, i) => {
           return (
             <button
@@ -87,7 +131,12 @@ function App() {
           );
         })}
       </div>
-        <div>{fps.toFixed(0)} fps</div>
+      <div className="card">
+        <div>
+          Lowest FPS: <b>{minFps ? minFps.toFixed(0) : "..."}</b>, Current FPS:{" "}
+          {recordedFps.current.length > 0 && avg(recordedFps.current).toFixed(0)}
+        </div>
+      </div>
       <div className="card" id="plot"></div>
     </>
   );
