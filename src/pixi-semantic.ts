@@ -1,5 +1,4 @@
 import * as PIXI from "pixi.js";
-import { generateRandomData } from "./utils";
 
 
 function translateAndScale(position: number, center: number, scale: number) {
