@@ -41,7 +41,7 @@ function App() {
     TextureScatterPlot | TranslateScatterPlot | RedrawScatterPlot
   >();
   const [minFps, setMinFps] = useState<number>();
-  const recordedFps = useRef<number[]>([]);
+  const lastFiveFps = useRef<number[]>([]);
 
   const data = useMemo(
     () =>
@@ -63,15 +63,17 @@ function App() {
   }
 
   useEffect(() => {
-    recordedFps.current.push(fps);
+    lastFiveFps.current.push(fps);
     // Look at a window of the last 5 fps values
-    if (recordedFps.current.length > 5) {
-      recordedFps.current.shift();
+    if (lastFiveFps.current.length > 5) {
+      lastFiveFps.current.shift();
     }
-    const avgFps = avg(recordedFps.current);
+    const avgFps = avg(lastFiveFps.current);
     if (isRecordingMinFps && (minFps === undefined || avgFps < minFps)) {
       setMinFps(avgFps);
     }
+    // This dependency array is not ideal since fps will get added to recordedFps.current a few extra times
+    // Minimal impact on accuracy though
   }, [fps, minFps, isRecordingMinFps]);
 
   useEffect(() => {
@@ -134,7 +136,7 @@ function App() {
       <div className="card">
         <div>
           Lowest FPS: <b>{minFps ? minFps.toFixed(0) : "..."}</b>, Current FPS:{" "}
-          {recordedFps.current.length > 0 && avg(recordedFps.current).toFixed(0)}
+          {lastFiveFps.current.length > 0 && avg(lastFiveFps.current).toFixed(0)}
         </div>
       </div>
       <div className="card" id="plot"></div>
