@@ -136,7 +136,7 @@ function App() {
       <div className="card">
         <div>
           Lowest FPS: <b>{minFps ? minFps.toFixed(0) : "..."}</b>, Current FPS:{" "}
-          {lastFiveFps.current.length > 0 && avg(lastFiveFps.current).toFixed(0)}
+          {lastFiveFps.current.length > 0 && Math.min(...lastFiveFps.current).toFixed(0)}
         </div>
       </div>
       <div className="card" id="plot"></div>
