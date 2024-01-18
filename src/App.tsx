@@ -98,7 +98,7 @@ function App() {
 
   return (
     <>
-      <div></div>
+      <div className="top-corner"><a href="https://github.com/etowahadams/pixijs-rendering-comparison">See on GitHub</a></div>
       <h1>Compare PixiJS Rendering</h1>
       <div className="card">
         <p className="label">Rendering strategy:</p>

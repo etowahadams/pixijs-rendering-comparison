@@ -22,3 +22,10 @@
 .desc {
   max-width: 800px;
 }
+
+.top-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5em 2em;
+}
