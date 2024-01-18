@@ -99,7 +99,7 @@ function App() {
   return (
     <>
       <div></div>
-      <h1>Testing PixiJS Rendering</h1>
+      <h1>Compare PixiJS Rendering</h1>
       <div className="card">
         <p className="label">Rendering strategy:</p>
         {plots.map((plot, i) => {
