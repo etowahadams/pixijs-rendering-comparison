@@ -3,14 +3,21 @@ import "./App.css";
 import { RedrawScatterPlot } from "./redraw-scatter-plot";
 import { TranslateScatterPlot } from "./translate-scatter-plot";
 import { TextureScatterPlot } from "./texture-scatter-plot";
+import { TextureUniqueScatterPlot } from "./texture-unique-scatter-plot";
 import { Data, generateRandomData } from "./utils";
 
 const plots = [
   {
-    label: "Translate Sprites",
+    label: "Reuse Texture",
     description:
-      "Circles are instances of the same Sprite. On zoom, the Sprites get translated.",
+      "Circles are Sprites which all use the same Texture. On zoom, the Sprites get translated.",
     content: TextureScatterPlot,
+  },
+  {
+    label: "Unique Textures",
+    description:
+      "Circles are Sprites which use different Textures. On zoom, the Sprites get translated.",
+    content: TextureUniqueScatterPlot,
   },
   {
     label: "Translate Graphics",
@@ -29,7 +36,7 @@ const plots = [
 const dataSizes = [4000, 16000, 64000, 128000];
 
 const circleStyles = [
-  "same", "different"
+   "different", "same"
 ]
 
 function avg(arr: number[]) {
@@ -43,7 +50,7 @@ function App() {
   const [fps, setFps] = useState(120);
   const [isRecordingMinFps, setIsRecordingMinFps] = useState(false);
   const plot = useRef<
-    TextureScatterPlot | TranslateScatterPlot | RedrawScatterPlot
+    TextureScatterPlot | TextureUniqueScatterPlot | TranslateScatterPlot | RedrawScatterPlot
   >();
   const [minFps, setMinFps] = useState<number>();
   const lastFiveFps = useRef<number[]>([]);
@@ -157,7 +164,7 @@ function App() {
 
       </div>
       <div className="card">
-        <div>
+        <div className="desc">
           Lowest FPS: <b>{minFps ? minFps.toFixed(0) : "..."}</b>, Current FPS:{" "}
           {lastFiveFps.current.length > 0 && Math.min(...lastFiveFps.current).toFixed(0)}
         </div>
