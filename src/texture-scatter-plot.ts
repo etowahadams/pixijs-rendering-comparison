@@ -6,6 +6,7 @@ import { select } from "d3-selection";
 // temporary fix https://stackoverflow.com/a/54020925
 // @types/d3-select does not have the right version of d3-transition
 import { transition as d3Transition } from 'd3-transition';
+import { Data } from "./utils";
 select.prototype.transition = d3Transition;
 
 
@@ -29,7 +30,7 @@ const generateCircleTexture = (renderer: PIXI.IRenderer<HTMLCanvasElement>, radi
 
   const circle = new PIXI.Graphics();
   circle.lineStyle(1, 0x000000);
-  circle.beginFill(0x0000ff);
+  circle.beginFill(0xffffff); // Change the fill color to white
   circle.drawCircle(tileSize / 2, tileSize / 2, radius);
   circle.endFill();
 
@@ -41,13 +42,13 @@ const generateCircleTexture = (renderer: PIXI.IRenderer<HTMLCanvasElement>, radi
 export class TextureScatterPlot {
   private app: PIXI.Application<HTMLCanvasElement>;
   private pBase: PIXI.Graphics;
-  private data: { x: number; y: number }[] = [];
+  private data: Data[] = [];
   private xScale: ScaleLinear<number, number> = scaleLinear();
   private yScale: ScaleLinear<number, number> = scaleLinear();
   private circles: PIXI.Sprite[] = [];
 
   constructor(
-    data: { x: number; y: number }[],
+    data: Data[],
     width: number,
     height: number,
     container: HTMLDivElement,
@@ -82,9 +83,15 @@ export class TextureScatterPlot {
   }
 
   private createCircles(): void {
-    const circleTexture = generateCircleTexture(this.app.renderer, 5);
+    const multiplier = 2;
+    const size = 5; // in practice this should be the max circle size in the data
+    const circleTexture = generateCircleTexture(this.app.renderer, size * multiplier );
     this.circles = this.data.map((point) => {
       const circle = new PIXI.Sprite(circleTexture);
+      const color = new PIXI.Color(point.color);
+      circle.tint = color; // change the color
+      circle.anchor.set(0.5);
+      circle.scale.set((point.size / size) / multiplier);
       circle.position.x = point.x;
       circle.position.y = point.y;
       this.pBase.addChild(circle);

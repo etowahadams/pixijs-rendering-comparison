@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 import { scaleLinear, type ScaleLinear } from "d3-scale";
 import { zoom, D3ZoomEvent } from "d3-zoom";
 import { select } from "d3-selection";
+import { Data } from "./utils";
 
 // Default d3 zoom feels slow so we use this instead
 // https://d3js.org/d3-zoom#zoom_wheelDelta
@@ -17,13 +18,13 @@ function wheelDelta(event: WheelEvent) {
 export class TranslateScatterPlot {
   private app: PIXI.Application<HTMLCanvasElement>;
   private pBase: PIXI.Graphics;
-  private data: { x: number; y: number }[] = [];
+  private data: Data[] = [];
   private xScale: ScaleLinear<number, number> = scaleLinear();
   private yScale: ScaleLinear<number, number> = scaleLinear();
   private circles: PIXI.Graphics[] = [];
 
   constructor(
-    data: { x: number; y: number }[],
+    data: Data[],
     width: number,
     height: number,
     container: HTMLDivElement,
@@ -58,11 +59,12 @@ export class TranslateScatterPlot {
   }
 
   private createCircles(): void {
-    this.circles = this.data.map(() => {
+    this.circles = this.data.map((point) => {
       const circle = new PIXI.Graphics();
+      const color = new PIXI.Color(point.color);
       circle.lineStyle(1, 0x000000);
-      circle.beginFill(0x0000ff); // Change color to blue (0x0000ff)
-      circle.drawCircle(0, 0, 5);
+      circle.beginFill(color); // Change color to blue (0x0000ff)
+      circle.drawCircle(0, 0, point.size);
       circle.endFill();
       this.pBase.addChild(circle);
       return circle;

@@ -3,7 +3,7 @@ import "./App.css";
 import { RedrawScatterPlot } from "./redraw-scatter-plot";
 import { TranslateScatterPlot } from "./translate-scatter-plot";
 import { TextureScatterPlot } from "./texture-scatter-plot";
-import { generateRandomData } from "./utils";
+import { Data, generateRandomData } from "./utils";
 
 const plots = [
   {
@@ -28,12 +28,17 @@ const plots = [
 
 const dataSizes = [4000, 16000, 64000, 128000];
 
+const circleStyles = [
+  "same", "different"
+]
+
 function avg(arr: number[]) {
   return arr.reduce((a, b) => a + b) / arr.length;
 }
 
 function App() {
   const [currentPlot, setCurrentPlot] = useState(0);
+  const [currentCircleStyle, setCurrentCircleStyle] = useState(0); // [0, 1];
   const [numCircles, setNumCircles] = useState(4000);
   const [fps, setFps] = useState(120);
   const [isRecordingMinFps, setIsRecordingMinFps] = useState(false);
@@ -43,7 +48,7 @@ function App() {
   const [minFps, setMinFps] = useState<number>();
   const lastFiveFps = useRef<number[]>([]);
 
-  const data = useMemo(
+  const data: Data[] = useMemo(
     () =>
       generateRandomData({
         count: numCircles,
@@ -51,8 +56,9 @@ function App() {
         maxY: 4000,
         startX: -2000,
         startY: -2000,
+        style: circleStyles[currentCircleStyle]
       }),
-    [numCircles]
+    [numCircles, currentCircleStyle]
   );
 
   async function zoomLoop() {
@@ -132,6 +138,23 @@ function App() {
             </button>
           );
         })}
+      </div>
+      <div className="card">
+      <p className="label">Point style:</p>
+        {circleStyles.map((style, i) => {
+          return (
+            <button
+              key={i}
+              className={i === currentCircleStyle ? "active" : ""}
+              onClick={() => {
+                setCurrentCircleStyle(i);
+              }}
+            >
+              {style}
+            </button>
+          );
+        })}
+
       </div>
       <div className="card">
         <div>
