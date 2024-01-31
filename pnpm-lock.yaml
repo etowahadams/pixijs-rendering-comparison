@@ -17,9 +17,6 @@ dependencies:
   d3-zoom:
     specifier: ^3.0.0
     version: 3.0.0
-  fpsmeter:
-    specifier: ^0.3.1
-    version: 0.3.1
   pixi.js:
     specifier: ^7.3.3
     version: 7.3.3
@@ -43,9 +40,6 @@ devDependencies:
   '@types/d3-zoom':
     specifier: ^3.0.8
     version: 3.0.8
-  '@types/fpsmeter':
-    specifier: ^0.3.34
-    version: 0.3.34
   '@types/react':
     specifier: ^18.2.43
     version: 18.2.43
@@ -1154,10 +1148,6 @@ packages:
     resolution: {integrity: sha512-qp3m9PPz4gULB9MhjGID7wpo3gJ4bTGXm7ltNDsmOvsPduTeHp8wSW9YckBj3mljeOh4F0m2z/0JKAALRKbmLQ==}
     dev: false
 
-  /@types/fpsmeter@0.3.34:
-    resolution: {integrity: sha512-ja3G1z7zkL0SUIH8fkhrSuOrayqiaocbLd4uZ8rTTbLLZy8wCdLx4E1ygOtJy/K5133VyXaU4r0Tr1js7edshA==}
-    dev: true
-
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
     dev: true
@@ -1871,10 +1861,6 @@ packages:
   /flatted@3.2.9:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
     dev: true
-
-  /fpsmeter@0.3.1:
-    resolution: {integrity: sha512-i3zzNJwGkA+9WWIXpAtP0TCN64eO5VkKQgirYE7ZCVqyC3NfUPszU35R044fmSCjiMqefiBs5NiGKvD7lFJ87Q==}
-    dev: false
 
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
