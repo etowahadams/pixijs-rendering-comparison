@@ -3,10 +3,17 @@ import "./App.css";
 import { RedrawScatterPlot } from "./redraw-scatter-plot";
 import { TranslateScatterPlot } from "./translate-scatter-plot";
 import { TextureScatterPlot } from "./texture-scatter-plot";
+import { TextureScatterPlotv8 } from "./texture-scatter-plot-v8";
 import { TextureUniqueScatterPlot } from "./texture-unique-scatter-plot";
 import { Data, generateRandomData } from "./utils";
 
 const plots = [
+  {
+    label: "Reuse Texture v8",
+    description:
+      "Circles are Sprites which all use the same Texture. On zoom, the Sprites get translated.",
+    content: TextureScatterPlotv8,
+  },
   {
     label: "Reuse Texture",
     description:
@@ -50,7 +57,7 @@ function App() {
   const [fps, setFps] = useState(120);
   const [isRecordingMinFps, setIsRecordingMinFps] = useState(false);
   const plot = useRef<
-    TextureScatterPlot | TextureUniqueScatterPlot | TranslateScatterPlot | RedrawScatterPlot
+    TextureScatterPlot | TextureUniqueScatterPlot | TranslateScatterPlot | RedrawScatterPlot | TextureScatterPlotv8
   >();
   const [minFps, setMinFps] = useState<number>();
   const lastFiveFps = useRef<number[]>([]);
@@ -69,9 +76,10 @@ function App() {
   );
 
   async function zoomLoop() {
-    await plot.current?.scaleTo(0.05);
+    if (!plot.current) return;
+    await plot.current.scaleTo(0.05);
     setIsRecordingMinFps(true);
-    await plot.current?.scaleTo(1);
+    await plot.current.scaleTo(1);
     setIsRecordingMinFps(false);
   }
 
