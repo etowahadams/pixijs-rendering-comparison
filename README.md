@@ -1,7 +1,8 @@
 # PixiJS Rendering Comparison
 
-Animating thousands of points on a canvas is a common task in data visualization.
-This repository tests the performance of different rendering strategies for this task, using the [PixiJS](https://github.com/pixijs/pixijs) v7.
+Interactive data visualizations like scatterplots require efficient rendering of thousands of points. What is the most performant PixiJS rendering stratgy for rendering many different graphics objects?
+
+This repository tests the performance of different rendering strategies for this task, using the [PixiJS](https://github.com/pixijs/pixijs) v7 and v8. 
 
 Try the [live demo](https://etowahadams.github.io/pixijs-rendering-comparison/).
 
